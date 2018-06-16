@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "regexp"
+    "errors"
     "html/template"
     "io/ioutil"
     "net/http"
