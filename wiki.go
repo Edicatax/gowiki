@@ -7,6 +7,11 @@ import (
     "net/http"
 )
 
+// template.Must is a convenience wrapper that panics on a non-nil err value.
+// A panic is fine here because if we don't have edit or view we don't have a 
+// website.
+var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+
 type Page struct {
     Title string
     Body []byte
@@ -28,12 +33,7 @@ func loadPage(title string) (*Page, error) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-    t, err := template.ParseFiles(tmpl + ".html")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    err = t.Execute(w, p)
+    err = templates.ExecuteTemplate(w, tmpl + ".html", p)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
