@@ -9,7 +9,8 @@ import (
     "net/http"
 )
 
-const templatePath = "tmpl/"
+const templatePath  = "tmpl/"
+const dataPath      = "data/"
 
 // template.Must is a convenience wrapper that panics on a non-nil err value.
 // A panic is fine here because if we don't have edit or view we don't have a 
@@ -26,12 +27,12 @@ type Page struct {
 
 // Returns nil on success, error otherwise
 func (p *Page) save() error {
-    filename := p.Title + ".txt"
+    filename := dataPath + p.Title + ".txt"
     return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
 func loadPage(title string) (*Page, error) {
-    filename := title + ".txt"
+    filename := dataPath + title + ".txt"
     body, err := ioutil.ReadFile(filename)
     if err != nil {
         return nil, err
