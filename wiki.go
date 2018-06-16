@@ -9,10 +9,12 @@ import (
     "net/http"
 )
 
+const templatePath = "tmpl/"
+
 // template.Must is a convenience wrapper that panics on a non-nil err value.
 // A panic is fine here because if we don't have edit or view we don't have a 
 // website.
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var templates = template.Must(template.ParseFiles(templatePath + "edit.html", templatePath + "view.html"))
 
 // Regex for path validation.  MustCompile panics if the regex is bad.
 var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9_-]+)$")
@@ -49,6 +51,7 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+    // ExecuteTemplate wants a file name but not a full path
     err := templates.ExecuteTemplate(w, tmpl + ".html", p)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
