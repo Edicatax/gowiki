@@ -1,1 +1,1 @@
-Testing
+This is the front page of the go-based wiki.
