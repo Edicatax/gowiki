@@ -36,6 +36,16 @@ func loadPage(title string) (*Page, error) {
     return &Page{Title: title, Body: body}, nil
 }
 
+func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
+    m := validPath.FindSubstringMatch(r.URL.Path)
+    // If the url isn't a valid match for the regex we're doing it wrong
+    if m == nil {
+        http.NotFound(w, r)
+        return "", errors.New("Invalid page title")
+    }
+    return m[2], nil // The title is the second matching group
+}
+
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
     err := templates.ExecuteTemplate(w, tmpl + ".html", p)
     if err != nil {
