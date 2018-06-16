@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    "regexp"
     "html/template"
     "io/ioutil"
     "net/http"
@@ -11,6 +12,9 @@ import (
 // A panic is fine here because if we don't have edit or view we don't have a 
 // website.
 var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+
+// Regex for path validation.  MustCompile panics if the regex is bad.
+var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9_-]+)$")
 
 type Page struct {
     Title string
@@ -33,7 +37,7 @@ func loadPage(title string) (*Page, error) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-    err = templates.ExecuteTemplate(w, tmpl + ".html", p)
+    err := templates.ExecuteTemplate(w, tmpl + ".html", p)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
