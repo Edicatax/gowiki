@@ -20,6 +20,11 @@ var templates = template.Must(template.ParseFiles(templatePath + "edit.html", te
 // Regex for path validation.  MustCompile panics if the regex is bad.
 var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9_-]+)$")
 
+// Regex for page name validation.  Go compiles backslashes inside strings so
+// a double backslash is needed to write proper regexp.
+var validPage = regexp.MustCompile("\\[([a-zA-Z0-9_-]+)\\]")
+var validPageLink = "<a href=\"/view/$1\">$1</a>"
+
 type Page struct {
     Title string
     Body []byte
@@ -90,7 +95,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
-    body := r.FormValue("body")
+    body := validPage.ReplaceAllString(r.FormValue("body"), validPageLink)
     p := &Page{Title: title, Body: []byte(body)}
     err := p.save()
     if err != nil {
