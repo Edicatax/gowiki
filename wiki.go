@@ -3,7 +3,6 @@ package main
 import (
     "log"
     "regexp"
-    "errors"
     "html/template"
     "io/ioutil"
     "net/http"
@@ -72,6 +71,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
         http.Redirect(w, r, "/edit/" + title, http.StatusFound)
         return
     }
+    p.Body = []byte(validPage.ReplaceAllString(string(p.Body), validPageLink))
     renderTemplate(w, "view", p)
 }
 
@@ -84,7 +84,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
-    body := validPage.ReplaceAllString(r.FormValue("body"), validPageLink)
+    body := r.FormValue("body")
     p := &Page{Title: title, Body: []byte(body)}
     err := p.save()
     if err != nil {
